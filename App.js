@@ -94,13 +94,13 @@ export default class App extends Component {
     console.log('getToken');
     let value = '';
     let fcmToken = await AsyncStorage.getItem('fcmToken', value);
-    if (fcmToken === '') {
+    console.log(fcmToken);
+    if (fcmToken=== null || fcmToken === '') {
         fcmToken = await firebase.messaging().getToken();
         console.log('messaging - getToken');
         if (fcmToken) {
             // user has a device token
             await AsyncStorage.setItem('fcmToken', fcmToken);
-            console.log('token' + fcmToken);
         }
     }
     console.log(fcmToken);
