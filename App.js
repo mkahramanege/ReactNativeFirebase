@@ -30,13 +30,14 @@ export default class App extends Component {
       .setDescription('Kurumun yeni geliştirdiği hizmetlerden sizi bilgilendirir.')
       .setSound('star.wav');
     firebase.notifications().android.createChannel(channel);
-
     
 
     const channel2 = new firebase.notifications.Android.Channel('channel-emergency','Acil Durum', firebase.notifications.Android.Importance.Max)
       .setDescription('Acil durumlarda sizi bilgilendirir.')
       .setSound('siren.mp3');
     firebase.notifications().android.createChannel(channel2);
+
+    firebase.notifications().setBadge(0);
   }
   
   componentWillUnmount() {
@@ -48,8 +49,38 @@ export default class App extends Component {
 
     //Uygulama açıkken notification geldi
     this.notificationListener = firebase.notifications().onNotification((notification) => {
+        
         const { title, body } = notification;
-        this.showAlert(title, body);
+        //this.showAlert(title, body);
+
+        const localNotification = new firebase.notifications.Notification({
+          show_in_foreground: true
+        });
+
+        localNotification.setNotificationId(notification.notificationId);
+        localNotification.setTitle(title);
+        localNotification.setBody(body);
+        //localNotification.setSound('star.wav');
+
+        console.log(notification);
+
+        if (Platform.OS === 'android')
+        {
+          if (notification.data.channelId !== null)
+          {
+            localNotification.android.setChannelId(notification.data.channelId);
+          }
+          else 
+          {
+            localNotification.android.setChannelId('channel-new');
+          }
+          //localNotification.android.setChannelId('channel-new');
+        }
+        
+        firebase.notifications().setBadge(5);
+
+        firebase.notifications().displayNotification(localNotification);
+        
     });
   
     //Uygulama arka planda iken notification açıldı.

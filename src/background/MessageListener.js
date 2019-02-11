@@ -1,10 +1,7 @@
 import firebase from 'react-native-firebase';
 
 export default async (message) => {
-
-    
     firebase.notifications().setBadge(45);
-
 
     console.log('burada');
     const text = 'asd';
@@ -20,7 +17,7 @@ export default async (message) => {
     localNotification.setSound('star.wav');
 
       
-    localNotification.android.setChannelId('aa-channel5');
+    localNotification.android.setChannelId('channel-new');
     localNotification.android.setPriority(firebase.notifications.Android.Priority.High);
 
     const action = new firebase.notifications.Android.Action('Reply', 'ic_launcher', 'My Test Action');
