@@ -20,9 +20,8 @@ export default async (message) => {
     localNotification.android.setChannelId('channel-new');
     localNotification.android.setPriority(firebase.notifications.Android.Priority.High);
 
-    const action = new firebase.notifications.Android.Action('Reply', 'ic_launcher', 'My Test Action');
-    // Add the action to the notification
-    localNotification.android.addAction(action);
+    /*const action = new firebase.notifications.Android.Action('Reply', 'ic_launcher', 'My Test Action');
+    localNotification.android.addAction(action);*/
 
     return firebase.notifications().displayNotification(localNotification);
 }
