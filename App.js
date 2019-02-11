@@ -25,6 +25,18 @@ export default class App extends Component {
     console.log('componentDidMount');
     this.checkPermission();
     this.createNotificationListeners(); 
+
+    const channel = new firebase.notifications.Android.Channel('channel-new','Yeni Hizmet', firebase.notifications.Android.Importance.Max)
+      .setDescription('Kurumun yeni geliştirdiği hizmetlerden sizi bilgilendirir.')
+      .setSound('star.wav');
+    firebase.notifications().android.createChannel(channel);
+
+    
+
+    const channel2 = new firebase.notifications.Android.Channel('channel-emergency','Acil Durum', firebase.notifications.Android.Importance.Max)
+      .setDescription('Acil durumlarda sizi bilgilendirir.')
+      .setSound('siren.mp3');
+    firebase.notifications().android.createChannel(channel2);
   }
   
   componentWillUnmount() {
@@ -33,19 +45,25 @@ export default class App extends Component {
   }
 
   async createNotificationListeners() {
+
+    //Uygulama açıkken notification geldi
     this.notificationListener = firebase.notifications().onNotification((notification) => {
         const { title, body } = notification;
         this.showAlert(title, body);
     });
   
+    //Uygulama arka planda iken notification açıldı.
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
-        const { title, body } = notificationOpen.notification;
+        const { title, body } = notificationOpen.notification.data;
+        console.log(notificationOpen.notification);
         this.showAlert(title, body);
     });
   
+    //Uygulama kapalı iken gelen tıklayınca açılan notification
     const notificationOpen = await firebase.notifications().getInitialNotification();
     if (notificationOpen) {
-        const { title, body } = notificationOpen.notification;
+        const { title, body } = notificationOpen.notification.data;
+        console.log(notificationOpen.notification);
         this.showAlert(title, body);
     }
     this.messageListener = firebase.messaging().onMessage((message) => {
