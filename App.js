@@ -139,25 +139,31 @@ export default class App extends Component {
 
         
 
-        const action2 = new firebase.notifications.Android.Action('Cevapla', 'ic_launcher', 'Test Action');
+        /*const action2 = new firebase.notifications.Android.Action('id-evet', 'ic_launcher', 'Kabul Ediyorum');
         localNotification.android.addAction(action2);
 
         
-        const action = new firebase.notifications.Android.Action('Cevapla2', 'ic_launcher', 'Test Action2');
-        localNotification.android.addAction(action);
+        const action = new firebase.notifications.Android.Action('id-hayir', 'ic_launcher', 'Onaylamıyorum');
+        localNotification.android.addAction(action);*/
 
-        //firebase.notifications().displayNotification(localNotification);
+        const action3 = new firebase.notifications.Android.Action('id-cevapla', 'ic_launcher', 'Cevapla');
+        const remoteInput = new firebase.notifications.Android.RemoteInput('inputText').setLabel('Message');
+        action3.addRemoteInput(remoteInput);
+        localNotification.android.addAction(action3);
+        console.log('display');
+
+        firebase.notifications().displayNotification(localNotification);
 
 
-        const date = new Date();
+        /*const date = new Date();
         date.setSeconds(date.getSeconds() + 15);
         console.log(date);
-        
+
         console.log('scheduled' + date);
 
         firebase.notifications().scheduleNotification(localNotification, {
           fireDate: date.getTime()
-        });
+        });*/
 
         
 
@@ -175,7 +181,7 @@ export default class App extends Component {
     //Uygulama arka planda iken notification açıldı.
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
         const { title, body } = notificationOpen.notification.data;
-        console.log("Action" + notificationOpen.action);
+        console.log("Action - " + notificationOpen.action);
         console.log(notificationOpen.notification);
         this.showAlert(title, body);
     });
@@ -184,7 +190,7 @@ export default class App extends Component {
     const notificationOpen = await firebase.notifications().getInitialNotification();
     if (notificationOpen) {
         console.log(notificationOpen);
-        console.log("Action" + notificationOpen.action);
+        console.log("Action - " + notificationOpen.action);
         const { title, body } = notificationOpen.notification.data;
         console.log(notificationOpen.notification);
         console.log(notificationOpen.notification.android.actions);
