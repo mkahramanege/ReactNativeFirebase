@@ -43,9 +43,65 @@ export default class App extends Component {
   componentWillUnmount() {
     this.notificationListener();
     this.notificationOpenedListener();
+    this.messageListener();
   }
 
   async createNotificationListeners() {
+
+    this.messageListener = firebase.messaging().onMessage((notification) => {
+      console.log('burada');
+      console.log(notification);
+
+      const { title, body } = notification.data;
+        //this.showAlert(title, body);
+
+        const localNotification = new firebase.notifications.Notification({
+          show_in_foreground: true
+        });
+
+        localNotification.setNotificationId(notification.messageId);
+        localNotification.setTitle(title);
+        localNotification.setBody(body);
+        //localNotification.setSound('star.wav');
+
+        console.log(notification);
+
+        if (Platform.OS === 'android')
+        {
+          if (notification.data.channelId !== null)
+          {
+            localNotification.android.setChannelId(notification.data.channelId);
+          }
+          else 
+          {
+            localNotification.android.setChannelId('channel-new');
+          }
+          //localNotification.android.setChannelId('channel-new');
+        }
+
+        localNotification.android.setChannelId('channel-new');
+        
+        firebase.notifications().setBadge(5);
+
+        const date = new Date();
+        date.setSeconds(date.getSeconds() + 15);
+        console.log(date);
+
+        const action2 = new firebase.notifications.Android.Action('Cevapla', 'ic_launcher', 'Test Action');
+        localNotification.android.addAction(action2);
+
+        
+        const action = new firebase.notifications.Android.Action('Cevapla2', 'ic_launcher', 'Test Action2');
+        localNotification.android.addAction(action);
+
+        //firebase.notifications().displayNotification(localNotification);
+
+        console.log('scheduled' + date);
+
+        firebase.notifications().scheduleNotification(localNotification, {
+          fireDate: date.getTime()
+        });
+    });
 
     //Uygulama açıkken notification geldi
     this.notificationListener = firebase.notifications().onNotification((notification) => {
@@ -76,16 +132,50 @@ export default class App extends Component {
           }
           //localNotification.android.setChannelId('channel-new');
         }
+
+        localNotification.android.setChannelId('channel-new');
         
         firebase.notifications().setBadge(5);
 
-        firebase.notifications().displayNotification(localNotification);
+        
+
+        const action2 = new firebase.notifications.Android.Action('Cevapla', 'ic_launcher', 'Test Action');
+        localNotification.android.addAction(action2);
+
+        
+        const action = new firebase.notifications.Android.Action('Cevapla2', 'ic_launcher', 'Test Action2');
+        localNotification.android.addAction(action);
+
+        //firebase.notifications().displayNotification(localNotification);
+
+
+        const date = new Date();
+        date.setSeconds(date.getSeconds() + 15);
+        console.log(date);
+        
+        console.log('scheduled' + date);
+
+        firebase.notifications().scheduleNotification(localNotification, {
+          fireDate: date.getTime()
+        });
+
+        
+
+        //Tamamını Remove Etme
+        //firebase.notifications().removeAllDeliveredNotifications();
+
+        //Zamanlanmış Notificationları Alma
+        //firebase.notifications().getScheduledNotifications();
+
+        //Seçili Olanı Remove Etmek
+        //firebase.notifications().removeDeliveredNotification('notification-id');
         
     });
   
     //Uygulama arka planda iken notification açıldı.
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
         const { title, body } = notificationOpen.notification.data;
+        console.log("Action" + notificationOpen.action);
         console.log(notificationOpen.notification);
         this.showAlert(title, body);
     });
@@ -93,8 +183,11 @@ export default class App extends Component {
     //Uygulama kapalı iken gelen tıklayınca açılan notification
     const notificationOpen = await firebase.notifications().getInitialNotification();
     if (notificationOpen) {
+        console.log(notificationOpen);
+        console.log("Action" + notificationOpen.action);
         const { title, body } = notificationOpen.notification.data;
         console.log(notificationOpen.notification);
+        console.log(notificationOpen.notification.android.actions);
         this.showAlert(title, body);
     }
     this.messageListener = firebase.messaging().onMessage((message) => {

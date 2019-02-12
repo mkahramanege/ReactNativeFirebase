@@ -15,7 +15,7 @@ export default async (message) => {
     localNotification.setSubtitle('Unread message: 1');
     localNotification.setBody('text');
     localNotification.setSound('star.wav');
-
+    localNotification.setData({ action : 'Test' });
       
     localNotification.android.setChannelId('channel-new');
     localNotification.android.setPriority(firebase.notifications.Android.Priority.High);
